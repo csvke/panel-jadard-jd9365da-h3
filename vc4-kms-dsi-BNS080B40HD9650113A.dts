@@ -1,0 +1,85 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "brcm,bcm2712"; // RPi5 = "brcm,bcm2712"
+
+    fragment@0 {
+        target = <&dsi1>; // csvke: check if the panel is connected to dsi1 (CAM/DISP 1)
+        __overlay__ {
+            status = "okay";
+            #address-cells = <1>;
+            #size-cells = <0>;
+            // remarked out as ../linux/Documentation/devicetree/bindings/display/panel/jadard,jd9365da-h3.yaml does not have these properties
+            port {
+                dsi_out_port:endpoint {
+                    remote-endpoint = <&panel_dsi_port>;
+                };
+            };
+
+            BNS080B40HD9650113A:BNS080B40HD9650113A@0 {
+                compatible = "BNS,BNS080B40HD9650113A", "jadard,jd9365da-h3";
+                // compatible = "BNS,BNS080B40HD9650113A"; // cskve: check if this is the correct compatible string
+                status = "okay";
+                reg = <0>; // csvke: not sure what this is
+                // vdd-supply = <&vdd_3v3>;
+                // vccio-supply = <&vccio_1v8>;
+                reset-gpios = <&gpio 16 0>; // Adjust GPIO pin as needed, // cskve, pin 27 on fpc breakout board on yellow jumper wire
+                // backlight = <&backlight>; // Adjust backlight node as needed
+                
+                // pinctrl-names = "default"; // csvke: these values are referenced from the datasheet and tspi-rk3566-dsi-v10.dsti
+                // pinctrl-0 = <&dsi1_rst_gpio>; // csvke: these values are referenced from the datasheet and tspi-rk3566-dsi-v10.dsti
+                // backlight = <&backlight>; // csvke: these values are referenced from the datasheet and tspi-rk3566-dsi-v10.dsti
+                // reset-delay-ms = <30>; // csvke: these values are referenced from the datasheet and tspi-rk3566-dsi-v10.dsti
+                // enable-delay-ms = <100>; // csvke: these values are referenced from the datasheet and tspi-rk3566-dsi-v10.dsti
+                // prepare-delay-ms = <20>; // csvke: these values are referenced from the datasheet and tspi-rk3566-dsi-v10.dsti
+                // unprepare-delay-ms = <20>; // csvke: these values are referenced from the datasheet and tspi-rk3566-dsi-v10.dsti
+                // disable-delay-ms = <20>; // csvke: these values are referenced from the datasheet and tspi-rk3566-dsi-v10.dsti
+                // init-delay-ms = <10>; // csvke: these values are referenced from the datasheet and tspi-rk3566-dsi-v10.dsti
+                // dsi,flags = <(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST | MIPI_DSI_MODE_LPM | MIPI_DSI_MODE_EOT_PACKET)>;
+                // dsi,format = <MIPI_DSI_FMT_RGB888>;
+                // dsi,lanes  = <4>;
+                
+                port {
+                    panel_dsi_port: endpoint {
+                        remote-endpoint = <&dsi_out_port>; // csvke: check if this is the correct remote-endpoint, is it &dsi1_out or &dsi_out_port ? (as other dts flies have used &dsi_out_port)
+                    };
+                };
+            };
+        };
+    };
+    
+    // fragment@1 {
+    //     target = <&dsi1>;
+    //     __overlay__ {
+    //         port {
+    //             dsi1_out: endpoint {
+    //                 remote-endpoint = <&panel_dsi_port>;
+    //             };
+    //         };
+    //     };
+    // };
+
+    // fragment@2 {
+    //     target-path = "/regulators";
+    //     __overlay__ {
+    //         vdd_3v3: regulator-vdd-3v3 {
+    //             compatible = "regulator-fixed";
+    //             regulator-name = "vdd_3v3";
+    //             regulator-min-microvolt = <3300000>;
+    //             regulator-max-microvolt = <3300000>;
+    //             gpio = <&gpio 26 0>; // Adjust GPIO pin as needed
+    //             enable-active-high;
+    //         };
+
+    //         vccio_1v8: regulator-vccio-1v8 {
+    //             compatible = "regulator-fixed";
+    //             regulator-name = "vccio_1v8";
+    //             regulator-min-microvolt = <1800000>;
+    //             regulator-max-microvolt = <1800000>;
+    //             gpio = <&gpio 24 0>; // Adjust GPIO pin as needed
+    //             enable-active-high;
+    //         };
+    //     };
+    // };
+};
