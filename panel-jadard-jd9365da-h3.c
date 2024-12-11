@@ -13,6 +13,8 @@
 #include <drm/drm_panel.h>
 #include <drm/drm_print.h>
 
+// #include <drm/drm_crtc.h> // csvke: not sure if this is needed?
+
 #include <linux/gpio/consumer.h>
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -584,6 +586,8 @@ static const struct jadard_panel_desc cz101b4001_desc = {
 	.num_init_cmds = ARRAY_SIZE(cz101b4001_init_cmds),
 };
 
+// csvke
+
 static const struct jadard_init_cmd BNS080B40HD9650113A_init_cmds[] = {
 	// based on jadard_init_cmd radxa_display_8hd_ad002_init_cmds[]
 	{ .data = { 0xE0, 0x00 } },
@@ -770,6 +774,8 @@ static const struct jadard_init_cmd BNS080B40HD9650113A_init_cmds[] = {
 	{ .data = { 0xE0, 0x00 } },
 };
 
+// csvke
+
 /*
 TODO: Not sure if below has to be included in jadard_init_cmd BNS080B40HD9650113A_init_cmds
 
@@ -781,13 +787,15 @@ TODO: Not sure if below has to be included in jadard_init_cmd BNS080B40HD9650113
 
 
 {REGFLAG_END_OF_TABLE,0x00,{}} 
-
+   
 Reference:
 0x11	exit_sleep_mode	Power for the display panel is on. 
 0x29	set_display_on	Show the image on the display device.
 0x35	set_tear_on	Enable the tearing effect signal output.
 0x00	end_of_table	No more commands to be sent.
 */
+
+//csvke
 
 static const struct jadard_panel_desc BNS080B40HD9650113A_desc = {
 	// based on 8寸触显总成规格书.pdf page 15 for timing and page 4 for panel size
@@ -813,6 +821,8 @@ static const struct jadard_panel_desc BNS080B40HD9650113A_desc = {
 	.init_cmds = BNS080B40HD9650113A_init_cmds,
 	.num_init_cmds = ARRAY_SIZE(BNS080B40HD9650113A_init_cmds),
 };
+
+// csvke
 
 static int jadard_dsi_probe(struct mipi_dsi_device *dsi)
 {
@@ -890,17 +900,22 @@ static const struct of_device_id jadard_of_match[] = {
 		.compatible = "radxa,display-8hd-ad002",
 		.data = &radxa_display_8hd_ad002_desc
 	},
+	{
+		.compatible = "BNS,BNS080B40HD9650113A", // csvke
+		.data = &BNS080B40HD9650113A_desc //csvke
+	},
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, jadard_of_match);
 
 static struct mipi_dsi_driver jadard_driver = {
-	.probe = jadard_dsi_probe,
-	.remove = jadard_dsi_remove,
 	.driver = {
-		.name = "jadard-jd9365da",
+		.name = "panel-jadard-jd9365da-h3", // csvke: changed from "jadard-jd9365da" to "jadard-jd9365da-h3"
 		.of_match_table = jadard_of_match,
 	},
+	.probe = jadard_dsi_probe,
+	.remove = jadard_dsi_remove,
+	// .shutdown = jadeard_dsi_shutdown, // csvke: referencing other driver's .c (but the jadeard_dsi_shutdown function is not defined in this file)
 };
 module_mipi_dsi_driver(jadard_driver);
 
