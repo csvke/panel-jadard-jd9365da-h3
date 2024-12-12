@@ -16,3 +16,5 @@
 *.cmd
 *.symvers
 *.order
+
+reference/._raspberrypi5_gpio_pinout.png
